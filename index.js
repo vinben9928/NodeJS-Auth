@@ -37,8 +37,11 @@ app.post("/login", function(request, response) {
             }
             else {
                 bcrypt.compare(user.password, existingUser.password, function(error, result) {
-                    if(error) { console.log("Login failed: " + error.toString()); }
-                    if(result === true) {
+                    if(error) {
+                        console.log("Login failed: " + error.toString());
+                        response.send("An error occurred!");
+                    }
+                    else if(result === true) {
                         console.log("User logged in! (" + user.email + ")");
                         response.send("Login successful!");
                         //const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
@@ -72,10 +75,10 @@ app.post("/register", function(request, response) {
     var validationResult = validateUser(user);
     if(validationResult === true) {
         bcrypt.genSalt(12, function(error, salt) {
-            if(error) { throw error; };
+            if(error) { throw error; }
 
             bcrypt.hash(user.password, salt, function(error, hash) {
-                if(error) { throw error; };
+                if(error) { throw error; }
                 response.send("Successfully registered user '" + user.email + "'!");
 
                 user.password = hash;

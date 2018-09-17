@@ -6,8 +6,8 @@ const fs = require("fs");
 
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
-const validateUser = require("./modules/validateUser");
 const jwt = require("jsonwebtoken");
+const validateUser = require("./modules/validateUser");
 
 const app = express();
 const port = 8080;
@@ -21,33 +21,45 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post("/login", function(request, response) {
     const user = JSON.parse(request.body.user);
 
-    fs.readFile("./.data/users.json", function(error, data) {
-        if(error) { throw error; }
-        
-        const users = Array.from(JSON.parse(data.toString()));
-        const existingUser = users.find(function(usr) {
-            if(usr.email == user.email) { return true; }
-        });
+    var validationResult = validateUser(user);
+    if(validationResult === true) {
+        fs.readFile("./.data/users.json", function(error, data) {
+            if(error) { throw error; }
+            
+            const users = Array.from(JSON.parse(data.toString()));
+            const existingUser = users.find(function(usr) {
+                if(usr.email == user.email) { return true; }
+            });
 
-        if(existingUser === undefined) {
-            console.log("User doesn't exist: " + user.email);
+            if(existingUser === undefined) {
+                console.log("User doesn't exist: " + user.email);
+                response.send("Invalid e-mail or password!");
+            }
+            else {
+                bcrypt.compare(user.password, existingUser.password, function(error, result) {
+                    if(error) { console.log("Login failed: " + error.toString()); }
+                    if(result === true) {
+                        console.log("User logged in! (" + user.email + ")");
+                        response.send("Login successful!");
+                        //const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
+                        //response.send(token);
+                    }
+                    else {
+                        console.log("Invalid password!");
+                        response.send("Invalid e-mail or password!");
+                    }
+                });
+            }
+        });
+    }
+    else {
+        if(validationResult === null) {
+            response.send("An unknown error occurred!");
         }
         else {
-            bcrypt.compare(user.password, existingUser.password, function(error, result) {
-                if(error) { console.log("Login failed: " + error.toString()); }
-                if(result === true) {
-                    console.log("User logged in! (" + user.email + ")");
-                    console.log(process.env.node_auth_jwt_token);
-                    const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
-                    console.log(token);
-                    response.send(token);
-                }
-                else {
-                    console.log("Invalid password!");
-                }
-            });
+            response.send(validationResult.toString());
         }
-    });
+    }
 });
 
 app.post("/register", function(request, response) {
@@ -73,7 +85,7 @@ app.post("/register", function(request, response) {
     }
     else {
         if(validationResult === null) {
-            response.send("An unknown error occurred!")
+            response.send("An unknown error occurred!");
         }
         else {
             response.send(validationResult.toString());

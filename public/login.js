@@ -8,9 +8,11 @@ function login() {
     request.open("POST", "/login", true);
     request.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
 
-    request.onload(function(data) {
-        
-    });
+    request.onreadystatechange = function() {
+        if(this.readyState == 4 && this.status == 200) {
+            alert(this.responseText);
+        }
+    };
 
     request.send("user=" + JSON.stringify(user));
 }

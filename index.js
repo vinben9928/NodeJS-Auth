@@ -48,9 +48,8 @@ app.post("/register", function(request, response) {
 
         bcrypt.hash(tempPassword, salt, function(error, hash) {
             if(error) { throw error; };
+            res.send("Successfully registered user '" + user.email + "'!");
             
-            res.send("");
-
             user.password = hash;
             saveUser(user);
         });

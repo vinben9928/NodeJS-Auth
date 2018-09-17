@@ -5,8 +5,8 @@ const path = require("path");
 const fs = require("fs");
 
 const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
-const auth = require("./modules/auth");
+const bcrypt = require("bcryptjs");
+const auth = require("./modules/validateUser");
 
 const app = express();
 const port = 8080;
@@ -24,32 +24,41 @@ app.post("/login", function(request, response) {
         if(error) { throw error; }
         
         const users = Array.from(JSON.parse(data.toString()));
-        const userExists = users.find(function(usr) {
+        const existingUser = users.find(function(usr) {
             if(usr.email == user.email) { return true; }
         });
 
-        if(userExists === undefined) {
-            console.log("Login attempt failed: " + user.email);
+        if(existingUser === undefined) {
+            console.log("User doesn't exist: " + user.email);
         }
         else {
-
+            bcrypt.compare(user.password, existingUser.password, function(error, result) {
+                if(error) { console.log("Login failed: " + error.toString()); }
+                if(result === true) {
+                    console.log("User logged in! (" + user.email + ")");
+                }
+                else {
+                    console.log("Invalid password!");
+                }
+            });
         }
     });
 });
 
 app.post("/register", function(request, response) {
-    var user = {};
-    user.email = "john@example.com";
+    var user = JSON.parse(request.body.user);
 
-    var tempPassword = "abcd123";
-    
+    if(user === null) { throw "'user' cannot be null!"; }
+    if(user.email === undefined || user.email === null) { throw "'user.email' cannot be null!"; }
+    if(user.password === undefined || user.password === null) { throw "'user.password' cannot be null!"; }
+
     bcrypt.genSalt(12, function(error, salt) {
         if(error) { throw error; };
 
-        bcrypt.hash(tempPassword, salt, function(error, hash) {
+        bcrypt.hash(user.password, salt, function(error, hash) {
             if(error) { throw error; };
-            res.send("Successfully registered user '" + user.email + "'!");
-            
+            response.send("Successfully registered user '" + user.email + "'!");
+
             user.password = hash;
             saveUser(user);
         });

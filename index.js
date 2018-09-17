@@ -6,7 +6,8 @@ const fs = require("fs");
 
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
-const auth = require("./modules/validateUser");
+const validateUser = require("./modules/validateUser");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const port = 8080;
@@ -36,6 +37,10 @@ app.post("/login", function(request, response) {
                 if(error) { console.log("Login failed: " + error.toString()); }
                 if(result === true) {
                     console.log("User logged in! (" + user.email + ")");
+                    console.log(process.env.node_auth_jwt_token);
+                    const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
+                    console.log(token);
+                    response.send(token);
                 }
                 else {
                     console.log("Invalid password!");
@@ -52,17 +57,28 @@ app.post("/register", function(request, response) {
     if(user.email === undefined || user.email === null) { throw "'user.email' cannot be null!"; }
     if(user.password === undefined || user.password === null) { throw "'user.password' cannot be null!"; }
 
-    bcrypt.genSalt(12, function(error, salt) {
-        if(error) { throw error; };
-
-        bcrypt.hash(user.password, salt, function(error, hash) {
+    var validationResult = validateUser(user);
+    if(validationResult === true) {
+        bcrypt.genSalt(12, function(error, salt) {
             if(error) { throw error; };
-            response.send("Successfully registered user '" + user.email + "'!");
 
-            user.password = hash;
-            saveUser(user);
-        });
-    });
+            bcrypt.hash(user.password, salt, function(error, hash) {
+                if(error) { throw error; };
+                response.send("Successfully registered user '" + user.email + "'!");
+
+                user.password = hash;
+                saveUser(user);
+            });
+        }); 
+    }
+    else {
+        if(validationResult === null) {
+            response.send("An unknown error occurred!")
+        }
+        else {
+            response.send(validationResult.toString());
+        }
+    }
 });
 
 app.listen(port, () => {

@@ -21,49 +21,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post("/login", function(request, response) {
     const user = JSON.parse(request.body.user);
 
-    var validationResult = validateUser(user);
-    if(validationResult === true) {
-        fs.readFile("./.data/users.json", function(error, data) {
-            if(error) { throw error; }
-            
-            const users = Array.from(JSON.parse(data.toString()));
-            const existingUser = users.find(function(usr) {
-                if(usr.email == user.email) { return true; }
-            });
-
-            if(existingUser === undefined) {
-                console.log("User doesn't exist: " + user.email);
-                response.send("Invalid e-mail or password!");
-            }
-            else {
-                bcrypt.compare(user.password, existingUser.password, function(error, result) {
-                    if(error) {
-                        console.log("Login failed: " + error.toString());
-                        response.send("An error occurred!");
-                    }
-                    else if(result === true) {
-                        console.log("User logged in! (" + user.email + ")");
-                        //response.send("Login successful!");
-
-                        const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
-                        response.send(JSON.stringify({ access_token: token }));
-                    }
-                    else {
-                        console.log("Invalid password!");
-                        response.send("Invalid e-mail or password!");
-                    }
-                });
-            }
-        });
-    }
-    else {
-        if(validationResult === null) {
-            response.send("An unknown error occurred!");
-        }
-        else {
-            response.send(validationResult.toString());
-        }
-    }
+    
 });
 
 app.post("/register", function(request, response) {

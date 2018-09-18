@@ -43,9 +43,9 @@ app.post("/login", function(request, response) {
                     }
                     else if(result === true) {
                         console.log("User logged in! (" + user.email + ")");
-                        response.send("Login successful!");
-                        //const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
-                        //response.send(token);
+                        //response.send("Login successful!");
+                        const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
+                        response.send(token);
                     }
                     else {
                         console.log("Invalid password!");

@@ -23,7 +23,9 @@ app.post("/login", function(request, response) {
 
     auth.loginAsync(user.email, user.password)
         .then(function(token) {
-            response.send(JSON.stringify({ access_token: token }));
+            if(token !== null && token.access_token !== null) {
+                response.send(JSON.stringify(token))
+            };
         })
         .catch(function(error) {
             response.send(error);

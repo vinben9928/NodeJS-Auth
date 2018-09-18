@@ -44,6 +44,7 @@ app.post("/login", function(request, response) {
                     else if(result === true) {
                         console.log("User logged in! (" + user.email + ")");
                         //response.send("Login successful!");
+
                         const token = jwt.sign(existingUser.email, process.env.node_auth_jwt_token);
                         response.send(JSON.stringify({ access_token: token }));
                     }
@@ -68,55 +69,9 @@ app.post("/login", function(request, response) {
 app.post("/register", function(request, response) {
     var user = JSON.parse(request.body.user);
 
-    if(user === null) { throw "'user' cannot be null!"; }
-    if(user.email === undefined || user.email === null) { throw "'user.email' cannot be null!"; }
-    if(user.password === undefined || user.password === null) { throw "'user.password' cannot be null!"; }
-
-    var validationResult = validateUser(user);
-    if(validationResult === true) {
-        bcrypt.genSalt(12, function(error, salt) {
-            if(error) { throw error; }
-
-            bcrypt.hash(user.password, salt, function(error, hash) {
-                if(error) { throw error; }
-                response.send("Successfully registered user '" + user.email + "'!");
-
-                user.password = hash;
-                saveUser(user);
-            });
-        }); 
-    }
-    else {
-        if(validationResult === null) {
-            response.send("An unknown error occurred!");
-        }
-        else {
-            response.send(validationResult.toString());
-        }
-    }
+    
 });
 
 app.listen(port, () => {
     console.log("Started server at " + port + "!");
 });
-
-
-
-//Helper functions.
-function saveUser(user) {
-    if(user === null) { throw "'user' cannot be null!"; }
-    if(user.email === undefined || user.email === null) { throw "'user.email' cannot be null!"; }
-    if(user.password === undefined || user.password === null) { throw "'user.password' cannot be null!"; }
-
-    fs.readFile("./.data/users.json", function(error, data) {
-        if(error) { throw error; }
-        
-        const users = Array.from(JSON.parse(data.toString()));
-        users.push(user);
-
-        fs.writeFile("./.data/users.json", JSON.stringify(users, null, 4), function(err) { 
-            if(err) { console.log("Failed to add user: " + err.toString()); }
-            else    { console.log("User added successfully! (" + user.email + ")"); }
-        });
-    });
-}

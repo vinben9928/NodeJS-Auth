@@ -20,24 +20,28 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.post("/login", function(request, response) {
     const user = JSON.parse(request.body.user);
-    
-    auth.loginAsync(user.email, user.password).then(function(token) {
-        response.send(JSON.stringify({ access_token: token }));
-    }).catch(function(error) {
-        response.send(error);
-    });
+
+    auth.loginAsync(user.email, user.password)
+        .then(function(token) {
+            response.send(JSON.stringify({ access_token: token }));
+        })
+        .catch(function(error) {
+            response.send(error);
+        });
 });
 
 app.post("/register", function(request, response) {
     var user = JSON.parse(request.body.user);
 
-    auth.createUserAsync(user.email, user.password).then(function(result) {
-        if(result === true) {
-            response.send("User created successfully!");
-        }
-    }).catch(function(error) {
-        response.send(error);
-    });
+    auth.createUserAsync(user.email, user.password)
+        .then(function(result) {
+            if(result === true) {
+                response.send("User created successfully!");
+            }
+        })
+        .catch(function(error) {
+            response.send(error);
+        });
 });
 
 app.listen(port, () => {

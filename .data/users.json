@@ -1,1 +1,12 @@
-[]
+[
+    {
+        "email": "simon@strandh.one",
+        "password": "$2a$12$EdrCk3Vjv4g.B0uDh/pJfOfcmGN/md1li4yZCwAVU/ysiyoMNvhIW",
+        "id": 1537300296362
+    },
+    {
+        "email": "john@example.com",
+        "password": "$2a$12$kdhTI9.QzDTFUN4l9QRyJecbYr48gQm9f2MUeNx42bgfusaufks2W",
+        "id": 1537300313527
+    }
+]

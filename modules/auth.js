@@ -8,7 +8,7 @@ const tk = require("./tk");
 exports.validateInput = function(userObj) {
     const schema = Joi.object().keys({
         email: Joi.string().email({ minDomainAtoms: 2 }),
-        password: Joi.string().regex(/^.{3,}$/)
+        password: Joi.string().min(3) //.regex(/^.{3,}$/)
     }).with('email', 'password');
     
     const result = Joi.validate(userObj, schema);
@@ -170,7 +170,7 @@ function saveUserAsync(user) {
                 const users = Array.from(JSON.parse(data.toString()));
                 users.push(user);
 
-                resolveFs(user);
+                resolveFs(users);
             });
         });
 

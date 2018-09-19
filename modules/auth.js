@@ -69,7 +69,7 @@ exports.loginAsync = function(email, password) {
                     else if(result === true) {
                         console.log("User logged in! (" + user.email + ")");
 
-                        const token = jwt.sign(existingUser.email, tk.node_auth_jwt_token);
+                        const token = jwt.sign(existingUser.id, tk.node_auth_jwt_token);
                         resolveBcrypt({ access_token: token });
                     }
                     else {

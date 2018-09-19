@@ -14,7 +14,7 @@ const app = express();
 const port = 8080;
 
 app.use(helmet());
-app.use(log());
+app.use(log);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());

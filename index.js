@@ -25,14 +25,15 @@ app.post("/login", function(request, response) {
     if(request.body.password === undefined || request.body.password === null) { response.send("Bad request!"); return; }
 
     const user = { email: request.body.email, password: request.body.password };
-    
+
     auth.loginAsync(user.email, user.password)
         .then(function(token) {
-            if(token !== null && token.access_token !== null) {
+            if(token !== undefined && token.access_token !== undefined
+                && token !== null && token.access_token !== null) {
                 response.send(JSON.stringify(token));
             }
             else {
-                console.log("Token missing!");
+                console.log("Token null!");
                 response.send(JSON.stringify({error: "An error occurred!"}));
             }
         })
@@ -51,7 +52,7 @@ app.post("/register", function(request, response) {
             }
         })
         .catch(function(error) {
-            response.send(JSON.stringify({success: false, error: error}));
+            response.send(JSON.stringify({error: error}));
         });
 });
 

@@ -43,7 +43,10 @@ app.post("/login", function(request, response) {
 });
 
 app.post("/register", function(request, response) {
-    var user = JSON.parse(request.body.user);
+    if(request.body.email === undefined || request.body.email === null) { response.send("Bad request!"); return; }
+    if(request.body.password === undefined || request.body.password === null) { response.send("Bad request!"); return; }
+    
+    const user = { email: request.body.email, password: request.body.password };
 
     auth.createUserAsync(user.email, user.password)
         .then(function(result) {

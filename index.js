@@ -23,17 +23,21 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.post("/login", function(request, response) {
     if(request.body.email === undefined || request.body.email === null) { response.send("Bad request!"); return; }
     if(request.body.password === undefined || request.body.password === null) { response.send("Bad request!"); return; }
-    
-    const user = { email: request.body.email, password: request.body.password };
 
+    const user = { email: request.body.email, password: request.body.password };
+    
     auth.loginAsync(user.email, user.password)
         .then(function(token) {
             if(token !== null && token.access_token !== null) {
-                response.send(JSON.stringify(token))
-            };
+                response.send(JSON.stringify(token));
+            }
+            else {
+                console.log("Token missing!");
+                response.send(JSON.stringify({error: "An error occurred!"}));
+            }
         })
         .catch(function(error) {
-            response.send(error);
+            response.send(JSON.stringify({error: error}));
         });
 });
 
@@ -43,11 +47,11 @@ app.post("/register", function(request, response) {
     auth.createUserAsync(user.email, user.password)
         .then(function(result) {
             if(result === true) {
-                response.send("User created successfully!");
+                response.send(JSON.stringify({success: true}));
             }
         })
         .catch(function(error) {
-            response.send(error);
+            response.send(JSON.stringify({success: false, error: error}));
         });
 });
 

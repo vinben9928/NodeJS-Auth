@@ -2,7 +2,11 @@ function login() {
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    const user = { email: email, password: password };
+    $.post("/login", { email: email, password: password }, function(data) {
+        alert(data);
+    });
+
+    /*const user = { email: email, password: password };
     const request = new XMLHttpRequest();
 
     request.open("POST", "/login", true);
@@ -14,5 +18,5 @@ function login() {
         }
     };
 
-    request.send("user=" + JSON.stringify(user));
+    request.send("user=" + JSON.stringify(user));*/
 }

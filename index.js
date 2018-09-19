@@ -21,7 +21,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
 app.post("/login", function(request, response) {
-    const user = JSON.parse(request.body.user);
+    if(request.body.email === undefined || request.body.email === null) { response.send("Bad request!"); return; }
+    if(request.body.password === undefined || request.body.password === null) { response.send("Bad request!"); return; }
+    
+    const user = { email: request.body.email, password: request.body.password };
 
     auth.loginAsync(user.email, user.password)
         .then(function(token) {

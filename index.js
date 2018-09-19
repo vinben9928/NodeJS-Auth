@@ -3,6 +3,7 @@ const helmet = require("helmet");
 
 const path = require("path");
 const fs = require("fs");
+const log = require("./middleware/log");
 
 const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
@@ -13,6 +14,7 @@ const app = express();
 const port = 8080;
 
 app.use(helmet());
+app.use(log());
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());

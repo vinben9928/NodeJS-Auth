@@ -14,7 +14,7 @@ const app = express();
 const port = 8080;
 
 app.use(helmet());
-app.use(log);
+//app.use(log);
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(bodyParser.json());
@@ -57,6 +57,10 @@ app.post("/register", function(request, response) {
         .catch(function(error) {
             response.send(JSON.stringify({error: error}));
         });
+});
+
+app.get("/", function(request, response) {
+    response.send("Hai!");
 });
 
 app.listen(port, () => {

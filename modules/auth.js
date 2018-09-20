@@ -89,6 +89,28 @@ exports.loginAsync = function(email, password) {
     });
 };
 
+exports.verifyTokenAsync = function(token) {
+    return new Promise((resolve, reject) => {
+        if(typeof token !== "string") { reject("Token must be a string!"); return; }
+
+        const data = await new Promise((resolveJwt, rejectJwt) => {
+            jwt.verify(token, tk.node_auth_jwt_token, function(error, data) {
+                if(error) {
+                    rejectJwt("verifyTokenAsync() verifying error: " + error.toString());
+                    reject("An error occurred!");
+                    return;
+                }
+
+                resolveJwt(data);
+            });
+        }).catch(function(error) { console.log(error.toString()); });
+        
+        if(data === undefined || data === null) { return; }
+
+        resolve(data);
+    });
+}
+
 //User creation.
 exports.createUserAsync = function(email, password) {
     return new Promise(async (resolve, reject) =>

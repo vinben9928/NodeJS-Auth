@@ -90,7 +90,7 @@ exports.loginAsync = function(email, password) {
 };
 
 exports.verifyTokenAsync = function(token) {
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         if(typeof token !== "string") { reject("Token must be a string!"); return; }
 
         const data = await new Promise((resolveJwt, rejectJwt) => {
